@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect
-from database import get_db_connection
+from flask import Flask, render_template, request, redirect, session
+from werkzeug.security import generate_password_hash, check_password_hash
+from database import get_db_connection, init_db
 
 app = Flask(__name__)
+app.secret_key = "routinebattle123"
 
+init_db()
 @app.route("/")
 def home():
     return redirect("/dashboard")
@@ -10,11 +13,14 @@ def home():
 
 @app.route("/dashboard")
 def dashboard():
+    if "user_id" not in session:
+        return redirect("/login")
 
     conn = get_db_connection()
 
     routines = conn.execute(
-        "SELECT * FROM routines"
+        "SELECT * FROM routines WHERE user_id=?",
+        (session["user_id"],)
     ).fetchall()
 
     total = len(routines)
@@ -61,7 +67,7 @@ def add_routine():
 
         conn.execute(
             "INSERT INTO routines (user_id, task_name) VALUES (?, ?)",
-            (1, task)
+            (session["user_id"], task)
         )
 
         conn.commit()
@@ -104,6 +110,68 @@ def delete_task(id):
     conn.close()
 
     return redirect("/dashboard")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+
+        hashed_password = generate_password_hash(password)
+
+        conn = get_db_connection()
+
+        conn.execute(
+            """
+            INSERT INTO users
+            (username,email,password)
+            VALUES (?,?,?)
+            """,
+            (username,email,hashed_password)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/login")
+
+    return render_template("register.html")
+
+@app.route("/login", methods=["GET","POST"])
+def login():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        conn = get_db_connection()
+
+        user = conn.execute(
+            "SELECT * FROM users WHERE email=?",
+            (email,)
+        ).fetchone()
+
+        conn.close()
+
+        if user and check_password_hash(
+            user["password"],
+            password
+        ):
+
+            session["user_id"] = user["id"]
+
+            return redirect("/dashboard")
+
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
 
 if __name__ == "__main__":
     app.run(debug=True)
