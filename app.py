@@ -145,16 +145,31 @@ def login():
 
     if request.method == "POST":
 
-        email = request.form["email"]
+        # email = request.form["email"]
+        # password = request.form["password"]
+
+        # conn = get_db_connection()
+
+        # user = conn.execute(
+        #     "SELECT * FROM users WHERE email=?",
+        #     (email,)
+        # ).fetchone()
+
+        identifier = request.form["identifier"]
         password = request.form["password"]
 
         conn = get_db_connection()
 
         user = conn.execute(
-            "SELECT * FROM users WHERE email=?",
-            (email,)
+            """
+            SELECT *
+            FROM users
+            WHERE username = ?
+            OR email = ?
+            """,
+            (identifier, identifier)
         ).fetchone()
-
+        
         conn.close()
 
         if user and check_password_hash(
