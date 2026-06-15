@@ -15,9 +15,42 @@
 
     <h1>🔥 Routine Battle</h1>
 
-    <a href="/logout" class="logout-btn">
-        Logout
-    </a>
+    <div>
+
+        <a
+            href="/settings"
+            class="settings-btn"
+        >
+            Settings
+        </a>
+
+        <a
+            href="/logout"
+            class="logout-btn"
+        >
+            Logout
+        </a>
+
+    </div>
+    <div class="card">
+
+    <h3>📅 View Previous Day</h3>
+
+    <form method="GET" action="/dashboard" class="date-filter">
+
+        <input
+            type="date"
+            name="date"
+            value="{{ selected_date }}"
+        >
+
+        <button type="submit">
+            View
+        </button>
+
+    </form>
+
+</div>
 
 </div>
 
@@ -181,5 +214,39 @@ new Chart(document.getElementById('weeklyChart'), {
     }
 });
 </script> -->
+<div class="card">
+
+<h2>📅 Activity Heatmap</h2>
+
+<div class="heatmap">
+
+{% for day in heatmap_data %}
+
+    {% set percent =
+        (day["completed"] /
+         day["total"]) * 100
+    %}
+
+    <div
+        class="heat-cell
+
+        {% if percent == 100 %}
+            green
+        {% elif percent >= 50 %}
+            yellow
+        {% else %}
+            red
+        {% endif %}
+        "
+
+        title="{{ day['log_date'] }}"
+    >
+    </div>
+
+{% endfor %}
+
+</div>
+
+</div>
 </body>
 </html>

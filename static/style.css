@@ -166,3 +166,131 @@ label{
 .logout-btn:hover{
     opacity:0.9;
 }
+.settings-btn{
+    background:#3b82f6;
+    color:white;
+    padding:10px 15px;
+    border-radius:8px;
+    text-decoration:none;
+    margin-right:10px;
+}
+
+/* SETTINGS PAGE */
+
+.settings-card{
+    max-width:700px;
+    margin:40px auto;
+    background:#1e293b;
+    border-radius:15px;
+    padding:30px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.3);
+}
+
+.settings-header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.settings-header h1{
+    margin-bottom:10px;
+}
+
+.settings-header p{
+    color:#94a3b8;
+}
+
+.input-group{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:20px;
+}
+
+.input-group label{
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+.input-group input{
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#334155;
+    color:white;
+    font-size:16px;
+}
+
+.input-group input:focus{
+    outline:none;
+    border:2px solid #22c55e;
+}
+
+.settings-actions{
+    display:flex;
+    gap:15px;
+    margin-top:25px;
+}
+
+.save-btn{
+    background:#22c55e;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.back-btn{
+    background:#475569;
+    color:white;
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.save-btn:hover,
+.back-btn:hover{
+    opacity:0.9;
+}
+.heatmap{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+}
+
+.heat-cell{
+    width:20px;
+    height:20px;
+    border-radius:4px;
+}
+
+.green{
+    background:#22c55e;
+}
+
+.yellow{
+    background:#eab308;
+}
+
+.red{
+    background:#ef4444;
+}
+.date-filter{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.date-filter input{
+    padding:10px;
+    border-radius:8px;
+    border:none;
+}
+
+.date-filter button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}

@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import get_db_connection, init_db
+from datetime import date
+from datetime import date, timedelta
 
 app = Flask(__name__)
 app.secret_key = "routinebattle123"
@@ -18,19 +20,41 @@ def dashboard():
 
     conn = get_db_connection()
 
-    routines = conn.execute(
-        "SELECT * FROM routines WHERE user_id=?",
-        (session["user_id"],)
-    ).fetchall()
+    selected_date = request.args.get(
+    "date",
+    date.today().isoformat()
+)
 
+    routines = conn.execute(
+        """
+        SELECT
+            r.id,
+            r.task_name,
+            COALESCE(t.completed, 0) as completed
+
+        FROM routines r
+
+        LEFT JOIN task_logs t
+        ON r.id = t.routine_id
+        AND t.log_date = ?
+
+        WHERE r.user_id = ?
+        """,
+        (selected_date, session["user_id"])
+    ).fetchall()
     total = len(routines)
 
     completed = sum(
         routine["completed"]
         for routine in routines
     )
-    streak = 0
+    streak = calculate_streak(
+    session["user_id"]
+    )   
     progress = 0
+    heatmap_data = get_heatmap_data(
+    session["user_id"]
+    )
 
     if total > 0:
         progress = round(
@@ -51,7 +75,9 @@ def dashboard():
     progress=progress,
     total=total,
     completed=completed,
-    streak=streak
+    streak=streak,
+    selected_date=selected_date,
+    heatmap_data=heatmap_data
 )
 
 
@@ -75,36 +101,56 @@ def add_routine():
 
     return redirect("/dashboard")
 @app.route("/toggle/<int:id>")
-def toggle_task(id):
+def toggle(id):
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    selected_date = request.args.get(
+    "date",
+    date.today().isoformat()
+)
 
     conn = get_db_connection()
 
-    routine = conn.execute(
-        "SELECT completed FROM routines WHERE id=?",
-        (id,)
+    log = conn.execute(
+        """
+        SELECT *
+        FROM task_logs
+        WHERE routine_id=?
+        AND log_date=?
+        """,
+        # (id, today)
+        (id, selected_date)
     ).fetchone()
 
-    new_value = 0 if routine["completed"] else 1
+    if log:
 
-    conn.execute(
-        "UPDATE routines SET completed=? WHERE id=?",
-        (new_value, id)
-    )
+        new_status = 1
 
-    conn.commit()
-    conn.close()
+        if log["completed"] == 1:
+            new_status = 0
 
-    return redirect("/dashboard")
+        conn.execute(
+            """
+            UPDATE task_logs
+            SET completed=?
+            WHERE id=?
+            """,
+            (new_status, log["id"])
+        )
 
-@app.route("/delete/<int:id>")
-def delete_task(id):
+    else:
 
-    conn = get_db_connection()
-
-    conn.execute(
-        "DELETE FROM routines WHERE id=?",
-        (id,)
-    )
+        conn.execute(
+            """
+            INSERT INTO task_logs
+            (routine_id, log_date, completed)
+            VALUES (?, ?, 1)
+            """,
+            # (id, today)
+            (id, selected_date)
+        )
 
     conn.commit()
     conn.close()
@@ -187,6 +233,186 @@ def login():
 def logout():
     session.clear()
     return redirect("/login")
+
+@app.route("/settings", methods=["GET", "POST"])
+def settings():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    conn = get_db_connection()
+
+    user = conn.execute(
+        "SELECT * FROM users WHERE id=?",
+        (session["user_id"],)
+    ).fetchone()
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        email = request.form["email"]
+
+        conn.execute(
+            """
+            UPDATE users
+            SET username=?,
+                email=?
+            WHERE id=?
+            """,
+            (username, email, session["user_id"])
+        )
+
+        conn.commit()
+
+        return redirect("/dashboard")
+
+    conn.close()
+
+    return render_template(
+        "settings.html",
+        user=user
+    )
+
+@app.route("/change-password", methods=["POST"])
+def change_password():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    current_password = request.form["current_password"]
+    new_password = request.form["new_password"]
+
+    conn = get_db_connection()
+
+    user = conn.execute(
+        "SELECT * FROM users WHERE id=?",
+        (session["user_id"],)
+    ).fetchone()
+
+    if not check_password_hash(
+        user["password"],
+        current_password
+    ):
+        conn.close()
+        return "Current password is incorrect"
+
+    hashed_password = generate_password_hash(
+        new_password
+    )
+
+    conn.execute(
+        """
+        UPDATE users
+        SET password=?
+        WHERE id=?
+        """,
+        (
+            hashed_password,
+            session["user_id"]
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/settings")
+
+@app.route("/delete/<int:id>")
+def delete(id):
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    conn = get_db_connection()
+
+    conn.execute(
+        """
+        DELETE FROM routines
+        WHERE id=?
+        AND user_id=?
+        """,
+        (id, session["user_id"])
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/dashboard")
+
+def calculate_streak(user_id):
+
+    conn = get_db_connection()
+
+    streak = 0
+
+    current_day = date.today()
+
+    while True:
+
+        day_str = current_day.isoformat()
+
+        logs = conn.execute(
+            """
+            SELECT tl.completed
+
+            FROM task_logs tl
+
+            JOIN routines r
+            ON tl.routine_id = r.id
+
+            WHERE r.user_id = ?
+            AND tl.log_date = ?
+            """,
+            (user_id, day_str)
+        ).fetchall()
+
+        if not logs:
+            break
+
+        total = len(logs)
+
+        completed = sum(
+            log["completed"]
+            for log in logs
+        )
+
+        if total == 0 or completed < total:
+            break
+
+        streak += 1
+
+        current_day -= timedelta(days=1)
+
+    conn.close()
+
+    return streak
+
+def get_heatmap_data(user_id):
+
+    conn = get_db_connection()
+
+    data = conn.execute(
+        """
+        SELECT
+            log_date,
+            COUNT(*) as total,
+            SUM(tl.completed) as completed
+
+        FROM task_logs tl
+
+        JOIN routines r
+        ON tl.routine_id = r.id
+
+        WHERE r.user_id=?
+
+        GROUP BY log_date
+        """,
+        (user_id,)
+    ).fetchall()
+
+    conn.close()
+
+    return data
 
 if __name__ == "__main__":
     app.run(debug=True)
