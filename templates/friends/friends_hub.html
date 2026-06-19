@@ -1,0 +1,134 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">
+    Friends Hub 👥
+</h1>
+
+<!-- PENDING REQUESTS -->
+
+<div class="friend-section">
+
+```
+<h2>Pending Requests</h2>
+
+{% for request in requests %}
+
+<div class="friend-card">
+
+    <img
+        src="{% if request.profile_image %}{{ request.profile_image }}{% else %}https://cdn-icons-png.flaticon.com/512/3135/3135715.png{% endif %}"
+        class="friend-avatar"
+    >
+
+    <div>
+        <h3>{{ request.username }}</h3>
+        <p>Wants to be your friend</p>
+    </div>
+
+    <a
+        href="/accept-request/{{ request.id }}"
+        class="accept-btn"
+    >
+        Accept
+    </a>
+
+</div>
+
+{% else %}
+
+<p>No pending requests.</p>
+
+{% endfor %}
+```
+
+</div>
+
+<!-- DISCOVER USERS -->
+
+<div class="friend-section">
+
+```
+<h2>Discover Users</h2>
+
+{% for user in users %}
+
+<div class="friend-card">
+
+    <img
+        src="{% if user.profile_image %}{{ user.profile_image }}{% else %}https://cdn-icons-png.flaticon.com/512/3135/3135715.png{% endif %}"
+        class="friend-avatar"
+    >
+
+    <div>
+        <h3>{{ user.username }}</h3>
+        <p>{{ user.college or '' }}</p>
+    </div>
+
+    <a
+        href="/send-request/{{ user.id }}"
+        class="add-btn"
+    >
+        Add Friend
+    </a>
+
+</div>
+
+{% else %}
+
+<p>No users available.</p>
+
+{% endfor %}
+```
+
+</div>
+
+<!-- FRIEND LIST -->
+
+<div class="friend-section">
+
+```
+<h2>Your Friends</h2>
+
+{% for friend in friends %}
+
+<div class="friend-card">
+
+    <img
+        src="{% if friend.profile_image %}{{ friend.profile_image }}{% else %}https://cdn-icons-png.flaticon.com/512/3135/3135715.png{% endif %}"
+        class="friend-avatar"
+    >
+
+    <div>
+        <h3>{{ friend.username }}</h3>
+        <p>{{ friend.college or '' }}</p>
+    </div>
+
+    <a
+        href="/remove-friend/{{ friend.id }}"
+        class="remove-btn"
+        onclick="return confirm('Remove this friend?')"
+    >
+        Remove
+    </a>
+
+    <a
+        href="/friend-profile/{{ friend.id }}"
+        class="view-btn"
+    >
+        View Profile
+    </a>
+
+</div>
+
+{% else %}
+
+<p>No friends yet.</p>
+
+{% endfor %}
+```
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+<div class="navbar">
+
+    <div class="welcome-section">
+
+        <h3>
+        Welcome, {{ session.get('username', 'User') }}
+    </h3>
+
+        <p>
+            Stay consistent and beat your streak today.
+        </p>
+
+    </div>
+
+    <div class="profile-section">
+
+        <button
+            class="dark-btn"
+            onclick="toggleMode()"
+        >
+            🌙
+        </button>
+
+        <img
+        src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+        class="profile-img"
+    >
+
+    </div>
+
+</div>

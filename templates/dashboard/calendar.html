@@ -1,0 +1,53 @@
+
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">
+    Calendar 📅
+</h1>
+
+<div class="calendar-container">
+
+    <div class="calendar-header">
+
+        <h2>
+            June 2026
+        </h2>
+
+    </div>
+
+    <div class="calendar-grid">
+
+        <div class="day-name">Sun</div>
+        <div class="day-name">Mon</div>
+        <div class="day-name">Tue</div>
+        <div class="day-name">Wed</div>
+        <div class="day-name">Thu</div>
+        <div class="day-name">Fri</div>
+        <div class="day-name">Sat</div>
+
+        {% for day in range(1,31) %}
+
+        <div class="calendar-day">
+
+            <span>
+                {{ day }}
+            </span>
+
+            {% if day % 3 == 0 %}
+
+            <div class="activity-dot"></div>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+

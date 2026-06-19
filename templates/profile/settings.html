@@ -1,0 +1,41 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<h1>
+    Settings ⚙️
+</h1>
+
+<div class="settings-card">
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value="{{ user.username }}"
+        >
+
+        <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value="{{ user.email }}"
+        >
+
+        <button type="submit">
+            Update Profile
+        </button>
+
+        <input
+        type="password"
+        name="password"
+        placeholder="New Password"
+    >
+
+    </form>
+
+</div>
+
+{% endblock %}

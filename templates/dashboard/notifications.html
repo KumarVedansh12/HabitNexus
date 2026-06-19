@@ -1,0 +1,23 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<h1>
+    Notifications 🔔
+</h1>
+
+<div class="leaderboard">
+
+    {% for note in notifications %}
+
+    <div class="leader-card">
+
+        {{ note.message }}
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

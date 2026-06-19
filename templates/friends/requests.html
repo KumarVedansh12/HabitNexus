@@ -1,0 +1,32 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<h1>
+    Friend Requests 📩
+</h1>
+
+<div class="leaderboard">
+
+    {% for request in requests %}
+
+    <div class="leader-card">
+
+        <h2>
+            {{ request.username }}
+        </h2>
+
+        <a
+            href="/accept-request/{{ request.id }}"
+            class="friend-btn"
+        >
+            Accept
+        </a>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

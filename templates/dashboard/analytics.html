@@ -1,0 +1,95 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<h1>
+    Analytics 📊
+</h1>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <h3>Total Tasks</h3>
+
+        <h1>
+            {{ total }}
+        </h1>
+
+    </div>
+
+    <div class="stat-card">
+
+        <h3>Completed</h3>
+
+        <h1>
+            {{ completed }}
+        </h1>
+
+    </div>
+
+    <div class="stat-card">
+
+        <h3>Progress</h3>
+
+        <h1>
+            {{ progress }}%
+        </h1>
+
+    </div>
+
+    <div class="stat-card">
+
+        <h3>Streak</h3>
+
+        <h1>
+            {{ streak }}
+        </h1>
+
+    </div>
+
+</div>
+
+<!-- CHART -->
+
+<div class="chart-box">
+
+    <canvas id="progressChart"></canvas>
+
+</div>
+
+<script>
+
+const ctx = document.getElementById(
+    'progressChart'
+);
+
+new Chart(ctx, {
+
+    type: 'doughnut',
+
+    data: {
+
+        labels: [
+            'Completed',
+            'Remaining'
+        ],
+
+        datasets: [{
+
+            data: [
+                {{ completed }},
+                {{ total - completed }}
+            ],
+
+            borderWidth: 2
+
+        }]
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

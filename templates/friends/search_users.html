@@ -1,0 +1,46 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<h1>
+    Search Users 🔍
+</h1>
+
+<form method="POST" class="task-form">
+
+    <input
+        type="text"
+        name="query"
+        placeholder="Search username..."
+    >
+
+    <button type="submit">
+        Search
+    </button>
+
+</form>
+
+<div class="leaderboard">
+
+    {% for user in users %}
+
+    <div class="leader-card">
+
+        <h2>
+            {{ user.username }}
+        </h2>
+
+        <a
+            href="/send-request/{{ user.id }}"
+            class="friend-btn"
+        >
+            Send Request
+        </a>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

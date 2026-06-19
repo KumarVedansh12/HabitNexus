@@ -1,0 +1,31 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<h1>
+    Leaderboard 🏆
+</h1>
+
+<div class="leaderboard">
+
+    {% for user in leaderboard_data %}
+
+    <div class="leader-card">
+
+        <h2>
+            {{ loop.index }}.
+            {{ user.username }}
+        </h2>
+
+        <p>
+            Progress:
+            {{ user.progress }}%
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<!-- HERO -->
+
+<div class="hero-section">
+
+    <div class="hero-left">
+
+        <h1>
+            Welcome Back 👋
+        </h1>
+
+        <p>
+            Build routines,
+            track progress,
+            and compete with friends.
+        </p>
+
+    </div>
+
+</div>
+
+<!-- STATS -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <h3>🔥 Streak</h3>
+        <h1>{{ streak }}</h1>
+    </div>
+
+    <div class="stat-card">
+        <h3>✅ Completed</h3>
+        <h1>{{ completed }}</h1>
+    </div>
+
+    <div class="stat-card">
+        <h3>📈 Progress</h3>
+        <h1>{{ progress }}</h1>
+    </div>
+
+    <div class="stat-card">
+        <h3>🏆 Rank</h3>
+        <h1>{{ rank }}</h1>
+    </div>
+
+</div>
+
+<!-- TASK SECTION -->
+
+<div class="task-layout">
+
+    <div class="task-section">
+
+        <div class="section-header">
+
+            <h2>
+                Today's Tasks
+            </h2>
+
+        </div>
+
+        <form
+            action="/add_routine"
+            method="POST"
+            class="task-form"
+        >
+
+            <input
+                type="text"
+                name="task"
+                placeholder="Add routine..."
+            >
+
+            <button type="submit">
+                Add
+            </button>
+
+        </form>
+
+        <div class="task-list">
+
+            {% for routine in routines %}
+            <div class="
+            task-card
+            {% if routine.completed == 1 %}
+            completed-card
+            {% endif %}
+            ">
+
+                <div class="task-left">
+
+                    <h3>
+
+                        {% if routine.completed == 1 %}
+                            ✅
+                        {% endif %}
+
+                        {{ routine.task_name }}
+
+                    </h3>
+
+                </div>
+
+                <div class="task-actions">
+
+                    <a
+                        href="/toggle/{{ routine.id }}"
+                        class="action-btn complete-btn"
+                    >
+
+                        {% if routine.completed == 1 %}
+                            Undo
+                        {% else %}
+                            Complete
+                        {% endif %}
+
+                    </a>
+
+                    <a
+                        href="/delete/{{ routine.id }}"
+                        class="action-btn delete-btn"
+                    >
+                        Delete
+                    </a>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+
+    <div class="side-widgets">
+
+        <!-- HEATMAP -->
+
+        <div class="widget-card">
+
+            <h2>
+                Activity Heatmap
+            </h2>
+
+            <div class="heatmap">
+
+                {% for day in heatmap_data %}
+
+                <div class="heat-box full">
+
+                    {{ day['log_date'][-2:] }}
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <!-- QUICK LINKS -->
+
+        <div class="widget-card">
+
+            <h2>
+                Quick Access
+            </h2>
+
+            <div class="quick-links">
+
+                <a href="/analytics">
+                    Analytics
+                </a>
+
+                <a href="/leaderboard">
+                    Leaderboard
+                </a>
+
+                <a href="/friends-hub">
+                    Friends
+                </a>
+
+                <a href="/dsa-tracker">
+                    DSA Tracker
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

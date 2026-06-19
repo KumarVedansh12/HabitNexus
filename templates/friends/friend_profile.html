@@ -1,0 +1,158 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<div class="profile-container">
+
+```
+<div class="profile-header">
+
+    <img
+        src="{{ friend.profile_image or 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}"
+        class="profile-avatar"
+        alt="Profile Picture"
+    >
+
+    <h1 class="profile-name">
+        {{ friend.username }}
+    </h1>
+
+    {% if friend.bio %}
+    <p class="profile-bio">
+        {{ friend.bio }}
+    </p>
+    {% else %}
+    <p class="profile-bio">
+        No bio added yet.
+    </p>
+    {% endif %}
+
+</div>
+
+<!-- STATS SECTION -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-number">
+            {{ total_tasks or 0 }}
+        </div>
+        <p>Total Tasks</p>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-number">
+            {{ completed_tasks or 0 }}
+        </div>
+        <p>Completed</p>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-number">
+            🔥
+        </div>
+        <p>Active User</p>
+    </div>
+
+</div>
+
+<!-- ABOUT SECTION -->
+
+<div class="info-card">
+
+    <h2>About</h2>
+
+    {% if friend.college %}
+    <p>
+        <strong>College:</strong>
+        {{ friend.college }}
+    </p>
+    {% endif %}
+
+    {% if friend.branch %}
+    <p>
+        <strong>Branch:</strong>
+        {{ friend.branch }}
+    </p>
+    {% endif %}
+
+    {% if friend.year %}
+    <p>
+        <strong>Year:</strong>
+        {{ friend.year }}
+    </p>
+    {% endif %}
+
+</div>
+
+<!-- SOCIAL LINKS -->
+
+<div class="info-card">
+
+    <h2>Social Links</h2>
+
+    <div class="social-links">
+
+        {% if friend.github %}
+        <a
+            href="{{ friend.github }}"
+            target="_blank"
+        >
+            GitHub
+        </a>
+        {% endif %}
+
+        {% if friend.linkedin %}
+        <a
+            href="{{ friend.linkedin }}"
+            target="_blank"
+        >
+            LinkedIn
+        </a>
+        {% endif %}
+
+        {% if friend.leetcode %}
+        <a
+            href="{{ friend.leetcode }}"
+            target="_blank"
+        >
+            LeetCode
+        </a>
+        {% endif %}
+
+    </div>
+
+    {% if not friend.github and not friend.linkedin and not friend.leetcode %}
+    <p>
+        No social links added yet.
+    </p>
+    {% endif %}
+
+</div>
+
+<!-- ACTIONS -->
+
+<div class="info-card">
+
+    <h2>Friend Status</h2>
+
+    <p>
+        You and {{ friend.username }} are connected.
+    </p>
+
+    <a
+        href="/remove-friend/{{ friend.id }}"
+        class="remove-btn"
+        onclick="return confirm('Remove this friend?')"
+    >
+        Remove Friend
+    </a>
+
+</div>
+```
+
+</div>
+
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+
+{% endblock %}
